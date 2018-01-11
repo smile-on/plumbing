@@ -31,3 +31,30 @@ func TestFormat_expected(t *testing.T) {
 		t.Errorf("got '%s' want '%s' ", cmd, expected)
 	}
 }
+
+func TestExec_simplest(t *testing.T) {
+	r := newRunner("echo")
+	vars := map[string]string{"param1": "ok"}
+	c := r.exec(vars)
+	if c != "ok" {
+		t.Error("simplest command returned failed exit code:" + c)
+	}
+}
+
+func TestExec_OneParam(t *testing.T) {
+	r := newRunner("echo {{.param1}}")
+	vars := map[string]string{"param1": "ok"}
+	c := r.exec(vars)
+	if c != "ok" {
+		t.Error("got failed exit code:" + c)
+	}
+}
+
+func TestExec_TwoParam(t *testing.T) {
+	r := newRunner("echo {{.param1}} {{.p2}}")
+	vars := map[string]string{"param1": "ok", "p1": "1", "p2": "2"}
+	c := r.exec(vars)
+	if c != "ok" {
+		t.Error("got failed exit code:" + c)
+	}
+}

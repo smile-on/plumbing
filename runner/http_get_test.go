@@ -8,7 +8,7 @@ func TestRunnerPage_smallNoParam(t *testing.T) {
 	c := testCase{t,
 		NewHTTPHandler(p),
 	}
-	c.testGetOK("/url1", `abc`)
+	c.testGetOK("/url1", `ok`)
 }
 
 func TestRunnerPage_smallOneParam(t *testing.T) {
@@ -16,5 +16,5 @@ func TestRunnerPage_smallOneParam(t *testing.T) {
 	c := testCase{t,
 		NewHTTPHandler(p),
 	}
-	c.testGetOK("/url1/abc", `abc`)
+	c.testGetOK("/url1/abc", `ok`)
 }

@@ -10,7 +10,7 @@ I am tired fixing Python scripts that has tons of ever changing dependencies.
 I do not have luxury of time to spend on IT services every time I need to kick small demo.
 
 My main prototype platform is Linux headless servers. No promises for Windows.
-
+The exit_status is string; "ok" for return code 0 or error description otherwise.
 
 
 ## Use Cases
@@ -20,7 +20,7 @@ synchronous flow
 +--------+ 1. GET /cmd1/p1  +---------------+
 |        +----------------> |               |
 | Client |                  | Server        |
-|        |   3. exit_code   |  ~/runnerd    |
+|        |  3. exit_status  |  ~/runnerd    |
 |        | <----------------+   2. $cmd1 p1 |
 +---------                  +---------------+
 ```

@@ -5,7 +5,8 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
+	"os/exec"
+	"strings"
 )
 
 // Pipe is an http handler that runs command line on request with parameters specified in the URL.
@@ -15,19 +16,18 @@ type Pipe struct {
 }
 
 type runner struct {
-	tmpl *template.Template // command line template
+	tmpl  *template.Template // command line template
+	queue chan string
+	code  chan string
 }
 
-func newRunner(tmpl string) runner {
+func newRunner(tmpl string) *runner {
 	t := template.Must(template.New("cmd").Parse(tmpl))
-	return runner{t}
-}
-
-func (r *runner) exec(vars map[string]string) (retCode int) {
-	cmd := r.format(vars)
-	log.Fatal("todo exec " + cmd)
-	//todo exec
-	return
+	q := make(chan string)
+	c := make(chan string)
+	r := &runner{t, q, c}
+	go execLoop(r)
+	return r
 }
 
 func (r *runner) format(vars map[string]string) string {
@@ -36,4 +36,35 @@ func (r *runner) format(vars map[string]string) string {
 		panic(fmt.Sprintf("can't format runner command, got error %s", err))
 	}
 	return buf.String()
+}
+
+func (r *runner) exec(vars map[string]string) string {
+	cmd := r.format(vars)
+	r.queue <- cmd
+	return <-r.code
+}
+
+func execLoop(r *runner) {
+	for cmd := range r.queue {
+		if len(cmd) == 0 {
+			r.code <- "Empty command line."
+		}
+		binary, params := cmdLineSplit(cmd)
+		err := exec.Command(binary, params...).Run()
+		if err != nil {
+			r.code <- err.Error()
+		}
+		r.code <- "ok"
+	}
+}
+
+func cmdLineSplit(cmdLine string) (cmd string, args []string) {
+	// todo split command and params should respect escaping space in quoted strings.
+	// look at "github.com/mattn/go-shellwords"
+	line := strings.SplitN(cmdLine, " ", 2)
+	cmd = line[0]
+	if len(line) > 1 {
+		args = strings.Split(line[1], " ")
+	}
+	return
 }
