@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -11,9 +10,10 @@ import (
 // NewHTTPHandler sets up http handlers according to specifications in pipes.
 func NewHTTPHandler(pipes []Pipe) http.Handler {
 	router := mux.NewRouter().StrictSlash(true)
-	// router.HandleFunc("/todos/{todoId}", todoShow)
+	for _, p := range pipes {
+		router.HandleFunc(p.URL, setRunnerPage(p.Cmd))
+	}
 	router.HandleFunc("/", setInfoPage(pipes))
-	router.HandleFunc("/json", returnJSON)
 	return router
 }
 
@@ -34,22 +34,11 @@ func setInfoPage(pipes []Pipe) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func todoShow(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	todoID := vars["todoId"]
-	fmt.Fprintln(w, "Todo show:", todoID)
-}
-
-func returnJSON(w http.ResponseWriter, r *http.Request) {
-	type ReturnCode struct {
-		ReturnCode int `json:"returnCode"`
-		// output     []byte
-	}
-	// get input r.Body
-	// execute cmd
-	code := ReturnCode{-1}
-	// return out
-	if err := json.NewEncoder(w).Encode(code); err != nil {
-		panic(err)
+func setRunnerPage(template string) func(http.ResponseWriter, *http.Request) {
+	runner := newRunner(template)
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		retCode := runner.exec(vars)
+		fmt.Fprintln(w, "%d", retCode)
 	}
 }
