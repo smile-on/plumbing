@@ -15,8 +15,11 @@ func main() {
 	// parse command line arguments
 	logFile := flag.String("log", "", "log file name")
 	listen := flag.String("listen", ":8080", "listener bind host:port address")
-	iniFile := flag.String("ini", "runnerd.ini", "definitions of command line services")
+	iniFile := flag.String("ini", "piped.ini", "definitions of command line services")
 	flag.Parse()
+
+	//todo setup logging
+	// "" = disabled; 	stdout;		file
 	if *logFile != "" {
 		f, err := os.OpenFile(*logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
@@ -25,8 +28,6 @@ func main() {
 		defer f.Close()
 		log.SetOutput(f)
 	}
-
-	//todo setup logging
 
 	// read pipe's settings
 	settings, err := ioutil.ReadFile(*iniFile)

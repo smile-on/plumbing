@@ -38,7 +38,7 @@ func setRunnerPage(template string) func(http.ResponseWriter, *http.Request) {
 	runner := newRunner(template)
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		retCode := runner.exec(vars)
+		retCode := runner.executeWith(vars)
 		fmt.Fprintf(w, "%s", retCode)
 	}
 }
