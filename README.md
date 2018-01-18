@@ -20,8 +20,36 @@ synchronous flow
 +--------+ 1. GET /cmd1/p1  +---------------+
 |        +----------------> |               |
 | Client |                  | Server        |
-|        |  3. exit_status  |  ~/runnerd    |
+|        |  3. exit_status  |  ~/piped    |
 |        | <----------------+   2. $cmd1 p1 |
 +---------                  +---------------+
 ```
+
+## Installation
+Simply build project with Go tool on your platform.
+
+```bash
+mkdir prj; cd prj
+export  GOPATH=`pwd`
+go get github.com/smile-on/plumbing/runner
+cd src
+go install github.com/smile-on/plumbing/cmd/piped
+
+```
+
+
+### How To Run 
+
+Create ini file for your service. Below is an example of serviceTouch.ini:
+```ini
+[/touch/{p1}]
+touch {{.p1}}
+```
+Now you can use piped executable with your configurations.
+```bash
+piped -ini serviceTouch.ini -listen :8080
+```
+
+Note, you may use piped binary on any computer of that platform just by copying one binary file and creating configuration file. It does not have any dependencies beside standard GO runtime requirements.
+Enjoy!
 
