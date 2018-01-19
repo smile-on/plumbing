@@ -34,7 +34,7 @@ func (c *testCase) testHTTP(method, url string, status int, content, body string
 	}
 	// Check the content type is what we expect.
 	if respondType := resp.Header.Get("Content-Type"); content != respondType {
-		c.t.Errorf("handler returned wrong content type: got '%s' want '%s'", content, respondType)
+		c.t.Errorf("handler returned wrong content type: got '%s' want '%s'", respondType, content)
 	}
 	// Check the response body is what we expect.
 	if string(respondBody) != body {

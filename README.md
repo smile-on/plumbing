@@ -45,11 +45,11 @@ Create ini file for your service. Below is an example of serviceTouch.ini:
 [/touch/{p1}]
 touch {{.p1}}
 ```
-Now you can use piped executable with your configurations.
+Now you can use piped executable with your configuration.
 ```bash
 piped -ini serviceTouch.ini -listen :8080
 ```
 
-Note, you may use piped binary on any computer of that platform just by copying one binary file and creating configuration file. It does not have any dependencies beside standard GO runtime requirements.
-Enjoy!
+Note, you may use piped binary on any computer of that platform just by copying one binary file and creating configuration file. Pipe daemon does not have any dependencies beside standard GO runtime requirements.
 
+Enjoy!

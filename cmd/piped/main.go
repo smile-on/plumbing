@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/smile-on/plumbing/runner"
 )
+
+var server http.Server
 
 func main() {
 	// parse command line arguments
@@ -37,12 +41,25 @@ func main() {
 	log.Println("started with settings in " + *iniFile)
 	pipes := runner.ParsePipes(string(settings))
 
-	service := runner.NewHTTPHandler(pipes)
-	log.Fatal(http.ListenAndServe(*listen, service))
+	server.Handler = runner.NewHTTPHandler(pipes)
+	server.Addr = *listen
+	if err := server.ListenAndServe(); err != nil {
+		log.Printf("stopped by %s\n", err)
+	}
+	log.Printf("done\n")
 }
 
 func usage(failure string) {
 	fmt.Println(failure)
 	flag.PrintDefaults()
 	os.Exit(2)
+}
+
+func shutdownServer() {
+	log.Printf("stopping HTTP server")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Print("failure / timeout shutting down the server gracefully.", err)
+	}
 }
