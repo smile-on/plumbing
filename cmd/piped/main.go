@@ -13,8 +13,6 @@ import (
 	"github.com/smile-on/plumbing/runner"
 )
 
-var server http.Server
-
 func main() {
 	// parse command line arguments
 	logFile := flag.String("log", "", "log file name")
@@ -41,6 +39,7 @@ func main() {
 	log.Println("started with settings in " + *iniFile)
 	pipes := runner.ParsePipes(string(settings))
 
+	// run server
 	server.Handler = runner.NewHTTPHandler(pipes)
 	server.Addr = *listen
 	if err := server.ListenAndServe(); err != nil {
@@ -55,11 +54,14 @@ func usage(failure string) {
 	os.Exit(2)
 }
 
+var server http.Server
+
 func shutdownServer() {
 	log.Printf("stopping HTTP server")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		log.Print("failure / timeout shutting down the server gracefully.", err)
+		log.Print("failure in shutting down the server gracefully.", err)
+		server.Close()
 	}
 }
