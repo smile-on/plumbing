@@ -24,6 +24,13 @@ synchronous flow
 |        | <----------------+   2. $cmd1 p1 |
 +---------                  +---------------+
 ```
+### 2. comand started by scheduler waits for trigger file before proceed.
+Example of waiting for trigger file with 60 seconds timeout.
+```
+$ wait4file -t 10 -n 6 //share/trigger.file
+return code 0 as soon the trigger file detected
+otherwise returns code 1
+```
 
 ## Installation
 Simply build project with Go tool on your platform.
