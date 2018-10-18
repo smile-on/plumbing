@@ -1,6 +1,7 @@
-// wait4file checks if specified file exists. If file found returns 0.
-// If not waits for t seconds and checks again. This check repeats n times.
+// wait4file checks if specified file exists. If the file is found returns 0.
+// If not waits for w seconds and checks again. This check repeats n times.
 // In case wait exceeds timeout and file still not exists returns 1.
+// In case of IO error or interuption returns 2.
 package main
 
 import (

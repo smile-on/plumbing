@@ -25,29 +25,33 @@ synchronous flow
 +---------                  +---------------+
 ```
 ### 2. comand started by scheduler waits for trigger file before proceed.
-Example of waiting for trigger file with 60 seconds timeout.
-```
-$ wait4file -t 10 -n 6 //share/trigger.file
-return code 0 as soon the trigger file detected
-otherwise returns code 1
+Example of waiting for trigger file checking file existence every 10 seconds with 60 seconds timeout.
+```sh
+$ wait4file -t 10 -n 6 //share/trigger.file || exit 1
 ```
 
 ## Installation
-Simply build project with Go tool on your platform.
+Simply build project with Go tool on your platform. Tested with GO 1.11.
 
 ```bash
 mkdir prj; cd prj
 export  GOPATH=`pwd`
-go get github.com/smile-on/plumbing/runner
-cd src
-go install github.com/smile-on/plumbing/cmd/piped
-
+go get github.com/smile-on/plumbing/cmd/wait4file
+# or
+go get -v github.com/smile-on/plumbing/cmd/piped
 ```
 
 
 ### How To Run 
 
-Create ini file for your service. Below is an example of serviceTouch.ini:
+* **wait4file**
+
+  ` $ wait4file -t 10 -n 6 //share/trigger.file || exit 1`
+
+* **piped**
+
+Create ini file for your service. An example of _serviceTouch.ini_:
+
 ```ini
 [/touch/{p1}]
 touch {{.p1}}
