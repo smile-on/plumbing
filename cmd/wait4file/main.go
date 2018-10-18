@@ -14,8 +14,8 @@ const (
 	OK = 0
 	// NoFile signals specified file does NOT exist.
 	NoFile = 1
-	// Err signals on execution error.
-	Err = 2
+	// Exception signals on execution error.
+	Exception = 2
 )
 
 func main() {
@@ -25,21 +25,38 @@ func main() {
 	flag.Parse()
 	if flag.NFlag() == 0 || *fileName == "" {
 		flag.PrintDefaults()
-		os.Exit(Err)
+		os.Exit(Exception)
 	}
 
-	for i := 0; i < *trys; i++ {
-		if isExist(*fileName) {
-			os.Exit(OK)
-		}
-		time.Sleep(time.Duration(*waitSeconds) * time.Second)
-	}
-	os.Exit(NoFile)
+	retCode := checkFileExist(*waitSeconds, *trys, *fileName)
+	os.Exit(retCode)
 }
 
-func isExist(filename string) bool {
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return false // file does not exist
+func checkFileExist(waitSeconds, trys int, fileName string) int {
+	for i := 0; i < trys; i++ {
+		ok, err := isExist(fileName)
+		if err != nil {
+			return Exception
+		}
+		if ok {
+			return OK
+		}
+		time.Sleep(time.Duration(waitSeconds) * time.Second)
 	}
-	return true
+	return NoFile
+}
+
+// func Stat(name string) (os.FileInfo, error)
+var stat = os.Stat
+
+func isExist(filename string) (bool, error) {
+	_, err := stat(filename)
+	if err == nil {
+		return true, nil // file does exist
+	}
+	if os.IsNotExist(err) {
+		return false, nil // file does not exist
+	} else {
+		return false, err
+	}
 }
