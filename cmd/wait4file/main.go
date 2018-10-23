@@ -6,6 +6,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"time"
 )
@@ -28,13 +29,18 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(Exception)
 	}
+	if *waitSeconds <= 0 || *trys <= 0 {
+		fmt.Fprintf(os.Stderr, "wait time and number of iterations must be positive integer numbers.\n")
+		os.Exit(Exception)
+	}
 
 	retCode := checkFileExist(*waitSeconds, *trys, *fileName)
 	os.Exit(retCode)
 }
 
 func checkFileExist(waitSeconds, trys int, fileName string) int {
-	for i := 0; i < trys; i++ {
+	pause := time.Duration(waitSeconds) * time.Second
+	for i := 0; ; i++ {
 		ok, err := isExist(fileName)
 		if err != nil {
 			return Exception
@@ -42,9 +48,11 @@ func checkFileExist(waitSeconds, trys int, fileName string) int {
 		if ok {
 			return OK
 		}
-		time.Sleep(time.Duration(waitSeconds) * time.Second)
+		if i == trys {
+			return NoFile
+		}
+		time.Sleep(pause)
 	}
-	return NoFile
 }
 
 // func Stat(name string) (os.FileInfo, error)
@@ -57,7 +65,7 @@ func isExist(filename string) (bool, error) {
 	}
 	if os.IsNotExist(err) {
 		return false, nil // file does not exist
-	} else {
-		return false, err
 	}
+	return false, err
+
 }
