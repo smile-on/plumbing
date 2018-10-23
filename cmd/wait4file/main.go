@@ -42,13 +42,13 @@ func checkFileExist(waitSeconds, trys int, fileName string) int {
 	pause := time.Duration(waitSeconds) * time.Second
 	for i := 0; ; i++ {
 		ok, err := isExist(fileName)
-		if err != nil {
-			return Exception
-		}
 		if ok {
 			return OK
 		}
 		if i == trys {
+			if err != nil {
+				return Exception
+			}
 			return NoFile
 		}
 		time.Sleep(pause)
