@@ -25,9 +25,9 @@ synchronous flow
 +---------                  +---------------+
 ```
 ### 2. comand started by scheduler waits for trigger file before proceed.
-Example of waiting for trigger file checking file existence every 10 seconds with 60 seconds timeout.
+Example of waiting for trigger file checking file existence every 10 seconds for 6 times with 60 seconds timeout total.
 ```sh
-$ wait4file -t 10 -n 6 //share/trigger.file || exit 1
+$ wait4file -w 10 -n 6 //share/trigger.file || exit 1
 ```
 
 ## Installation
@@ -46,7 +46,7 @@ go get -v github.com/smile-on/plumbing/cmd/piped
 
 * **wait4file**
 
-  ` $ wait4file -t 10 -n 6 //share/trigger.file || exit 1`
+  ` $ wait4file -w 10 -n 6 //share/trigger.file && echo "got file" || echo "no file" `
 
 * **piped**
 
